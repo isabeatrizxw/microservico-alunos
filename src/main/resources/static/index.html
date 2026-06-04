@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Microserviços</title>
+  <title>Microserviço</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -136,6 +136,10 @@
     .btn:hover { background: var(--accent-hv); }
     .btn:disabled { opacity: 0.6; cursor: default; }
 
+    .actions { display: flex; gap: 0.6rem; }
+    .btn-secondary { background: none; color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: none; border-color: var(--accent); color: var(--accent); }
+
     .result {
       margin-top: 1.1rem;
       padding: 1rem 1.1rem;
@@ -192,7 +196,10 @@
           <input type="number" id="nota2" placeholder="0 – 10" min="0" max="10" step="0.1" />
         </div>
       </div>
-      <button class="btn" type="submit">Calcular</button>
+      <div class="actions">
+        <button class="btn" type="submit">Calcular</button>
+        <button class="btn btn-secondary" type="button" id="btnLimpar">Limpar</button>
+      </div>
     </form>
 
     <div class="result" id="resultMedia">
@@ -276,6 +283,15 @@
     } finally {
       restaurar(botao, 'Calcular');
     }
+  });
+
+  // Limpar o formulário e o resultado da média
+  document.getElementById('btnLimpar').addEventListener('click', () => {
+    document.getElementById('formMedia').reset();
+    const box = document.getElementById('resultMedia');
+    box.className = 'result';
+    document.getElementById('mediaTexto').textContent = '';
+    document.getElementById('nome').focus();
   });
 
   // Consultar data e hora do servidor

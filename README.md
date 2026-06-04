@@ -25,11 +25,15 @@ curl -X POST http://localhost:8080/api/media \
 
 ## Regras de negócio
 
+A nota de corte padrão é **5** e pode ser alterada em `application.properties` (`aluno.nota-de-corte`) sem recompilar.
+
 | Média | Resultado |
 |---|---|
-| `> 5` | `Parabéns {nome}, você foi aprovado.` |
-| `= 5` | `{nome}, você não atingiu a nota de corte e foi reprovado.` |
-| `< 5` | `{nome}, você foi reprovado.` |
+| acima da nota de corte | `Parabéns {nome}, você foi aprovado.` |
+| igual à nota de corte | `{nome}, você não atingiu a nota de corte e foi reprovado.` |
+| abaixo da nota de corte | `{nome}, você foi reprovado.` |
+
+As notas enviadas são validadas (obrigatórias e entre 0 e 10); valores inválidos retornam `HTTP 400` com a mensagem do erro.
 
 ## Como executar
 
@@ -54,9 +58,11 @@ src/main/java/com/estudante/microservico/
 ├── service/
 │   ├── AlunoService.java           # Cálculo da média
 │   └── HorarioService.java         # Data/hora do servidor
-└── dto/
-    ├── AlunoRequestDTO.java        # Entrada (nome, notas)
-    └── AlunoResponseDTO.java       # Saída (média, mensagem)
+├── dto/
+│   ├── AlunoRequestDTO.java        # Entrada (nome, notas) + validações
+│   └── AlunoResponseDTO.java       # Saída (média, mensagem)
+└── exception/
+    └── ValidacaoExceptionHandler.java  # Trata erros de validação (HTTP 400)
 ```
 
 A organização segue camadas: **controller** (HTTP) → **service** (regras) → **dto** (transporte de dados).
