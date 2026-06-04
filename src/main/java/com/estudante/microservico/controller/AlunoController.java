@@ -3,6 +3,7 @@ package com.estudante.microservico.controller;
 import com.estudante.microservico.dto.AlunoRequestDTO;
 import com.estudante.microservico.dto.AlunoResponseDTO;
 import com.estudante.microservico.service.AlunoService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +21,7 @@ public class AlunoController {
     }
 
     @PostMapping("/media")
-    public ResponseEntity<AlunoResponseDTO> calcularMedia(@RequestBody AlunoRequestDTO request) {
+    public ResponseEntity<AlunoResponseDTO> calcularMedia(@Valid @RequestBody AlunoRequestDTO request) {
         return ResponseEntity.ok(alunoService.calcularMedia(request));
     }
 

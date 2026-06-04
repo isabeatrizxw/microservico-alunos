@@ -265,6 +265,11 @@
         body: JSON.stringify({ nome, nota1, nota2 })
       });
       const data = await res.json();
+      if (!res.ok) {
+        // O servidor devolveu erros de validação no formato { campo: mensagem }
+        mostrarResultado(box, texto, Object.values(data).join(' '), 'err');
+        return;
+      }
       mostrarResultado(box, texto, `Média ${data.media.toFixed(1)} — ${data.mensagem}`, 'ok');
     } catch {
       mostrarResultado(box, texto, 'Não foi possível conectar ao servidor.', 'err');
