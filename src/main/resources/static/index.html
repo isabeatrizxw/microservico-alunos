@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Microserviços</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #F8FAFC;
+      --card:      #FFFFFF;
+      --accent:    #3B82F6;
+      --accent-hv: #2563EB;
+      --text:      #1E293B;
+      --subtext:   #64748B;
+      --border:    #E2E8F0;
+      --success:   #16A34A;
+      --error:     #DC2626;
+      --shadow:    0 1px 3px rgba(15, 23, 42, 0.06);
+      --radius:    12px;
+    }
+
+    body.dark {
+      --bg:        #0F172A;
+      --card:      #1E293B;
+      --accent:    #60A5FA;
+      --accent-hv: #93C5FD;
+      --text:      #F8FAFC;
+      --subtext:   #94A3B8;
+      --border:    #334155;
+      --shadow:    0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+    }
+
+    header h1 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .theme-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.45rem 0.9rem;
+      cursor: pointer;
+      color: var(--text);
+      font-size: 0.85rem;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    main {
+      max-width: 760px;
+      margin: 2.5rem auto;
+      padding: 0 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.75rem;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      color: var(--text);
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--subtext);
+      margin-bottom: 0.35rem;
+    }
+
+    .field { margin-bottom: 1rem; }
+    .notas { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    input {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+
+    .btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.65rem 1.4rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--accent-hv); }
+    .btn:disabled { opacity: 0.6; cursor: default; }
+
+    .result {
+      margin-top: 1.1rem;
+      padding: 1rem 1.1rem;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      display: none;
+      border-left: 3px solid var(--accent);
+      background: var(--bg);
+    }
+    .result.visible { display: block; }
+    .result.ok  { border-color: var(--success); }
+    .result.err { border-color: var(--error); color: var(--error); }
+    .result strong { display: block; margin-bottom: 0.25rem; font-size: 0.8rem; color: var(--subtext); }
+
+    .clock {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+    }
+    .meta { font-size: 0.8rem; color: var(--subtext); margin-top: 0.3rem; }
+
+    @media (max-width: 520px) {
+      header { padding: 1rem; }
+      .card { padding: 1.25rem; }
+      .grid-2, .notas { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Microserviço</h1>
+  <button class="theme-btn" id="toggleTheme">🌙 Modo Escuro</button>
+</header>
+
+<main>
+
+  <div class="card">
+    <h2>Calcular Média</h2>
+    <form id="formMedia">
+      <div class="field">
+        <label for="nome">Nome do aluno</label>
+        <input type="text" id="nome" placeholder="Ex.: Maria" />
+      </div>
+      <div class="notas">
+        <div class="field">
+          <label for="nota1">Nota 1</label>
+          <input type="number" id="nota1" placeholder="0 – 10" min="0" max="10" step="0.1" />
+        </div>
+        <div class="field">
+          <label for="nota2">Nota 2</label>
+          <input type="number" id="nota2" placeholder="0 – 10" min="0" max="10" step="0.1" />
+        </div>
+      </div>
+      <button class="btn" type="submit">Calcular</button>
+    </form>
+
+    <div class="result" id="resultMedia">
+      <strong>Resultado</strong>
+      <span id="mediaTexto"></span>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2>Data e Hora do Servidor</h2>
+      <button class="btn" id="btnDatetime" type="button">Consultar</button>
+      <div class="result" id="resultDatetime">
+        <strong>Resposta do servidor</strong>
+        <span id="datetimeTexto"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Relógio</h2>
+      <div class="clock" id="relogio">--/--/---- --:--:--</div>
+      <p class="meta">Horário do navegador, atualizado a cada segundo</p>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  const API = '/api';
+
+  // Alternância entre modo claro e escuro
+  const toggleBtn = document.getElementById('toggleTheme');
+  toggleBtn.addEventListener('click', () => {
+    const dark = document.body.classList.toggle('dark');
+    toggleBtn.textContent = dark ? '☀️ Modo Claro' : '🌙 Modo Escuro';
+  });
+
+  // Relógio do navegador, atualizado a cada segundo
+  function atualizarRelogio() {
+    const agora = new Date();
+    const dia = String(agora.getDate()).padStart(2, '0');
+    const mes = String(agora.getMonth() + 1).padStart(2, '0');
+    const ano = agora.getFullYear();
+    document.getElementById('relogio').textContent =
+      `${dia}/${mes}/${ano} ${agora.toLocaleTimeString('pt-BR')}`;
+  }
+  setInterval(atualizarRelogio, 1000);
+  atualizarRelogio();
+
+  // Calcular média
+  document.getElementById('formMedia').addEventListener('submit', async (evento) => {
+    evento.preventDefault();
+    const nome = document.getElementById('nome').value.trim();
+    const nota1 = parseFloat(document.getElementById('nota1').value);
+    const nota2 = parseFloat(document.getElementById('nota2').value);
+    const box = document.getElementById('resultMedia');
+    const texto = document.getElementById('mediaTexto');
+
+    if (!nome || isNaN(nota1) || isNaN(nota2)) {
+      mostrarResultado(box, texto, 'Preencha o nome e as duas notas.', 'err');
+      return;
+    }
+
+    const botao = evento.submitter;
+    carregando(botao, 'Calculando...');
+    try {
+      const res = await fetch(`${API}/media`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, nota1, nota2 })
+      });
+      const data = await res.json();
+      mostrarResultado(box, texto, `Média ${data.media.toFixed(1)} — ${data.mensagem}`, 'ok');
+    } catch {
+      mostrarResultado(box, texto, 'Não foi possível conectar ao servidor.', 'err');
+    } finally {
+      restaurar(botao, 'Calcular');
+    }
+  });
+
+  // Consultar data e hora do servidor
+  document.getElementById('btnDatetime').addEventListener('click', async (evento) => {
+    const box = document.getElementById('resultDatetime');
+    const texto = document.getElementById('datetimeTexto');
+    const botao = evento.currentTarget;
+
+    carregando(botao, 'Consultando...');
+    try {
+      const res = await fetch(`${API}/datetime`);
+      const data = await res.json();
+      mostrarResultado(box, texto, data.dataHora, 'ok');
+    } catch {
+      mostrarResultado(box, texto, 'Não foi possível conectar ao servidor.', 'err');
+    } finally {
+      restaurar(botao, 'Consultar');
+    }
+  });
+
+  function mostrarResultado(box, elemento, mensagem, tipo) {
+    elemento.textContent = mensagem;
+    box.className = `result visible ${tipo}`;
+  }
+
+  function carregando(botao, texto) {
+    botao.disabled = true;
+    botao.textContent = texto;
+  }
+
+  function restaurar(botao, texto) {
+    botao.disabled = false;
+    botao.textContent = texto;
+  }
+</script>
+
+</body>
+</html>
