@@ -1,5 +1,6 @@
 // Ponto de entrada: descobre quem está logado e mostra a tela do papel dessa pessoa.
 import { api } from './api.js';
+import { aplicarTema, salvarTema, temaEscuroAtivo } from './tema.js';
 import { el, NOMES_DOS_PAPEIS } from './ui.js';
 import { telaLogin } from './telas/login.js';
 import { telaSuperAdmin } from './telas/superAdmin.js';
@@ -56,26 +57,19 @@ botaoSair.addEventListener('click', async () => {
   }
 });
 
-// Tema claro/escuro, lembrado neste navegador
+// Tema claro/escuro (ver tema.js): o botão alterna e lembra a escolha neste navegador
 const botaoTema = document.getElementById('alternarTema');
-function aplicarTema(escuro) {
-  document.body.classList.toggle('dark', escuro);
+function mostrarTema(escuro) {
+  aplicarTema(escuro);
   botaoTema.textContent = escuro ? 'Modo claro' : 'Modo escuro';
+  botaoTema.setAttribute('aria-pressed', String(escuro));
 }
 botaoTema.addEventListener('click', () => {
   const escuro = !document.body.classList.contains('dark');
-  aplicarTema(escuro);
-  try {
-    localStorage.setItem('tema', escuro ? 'escuro' : 'claro');
-  } catch {
-    // Navegação privada pode bloquear o localStorage: o tema só não fica salvo
-  }
+  mostrarTema(escuro);
+  salvarTema(escuro);
 });
-try {
-  aplicarTema(localStorage.getItem('tema') === 'escuro');
-} catch {
-  aplicarTema(false);
-}
+mostrarTema(temaEscuroAtivo());
 
 // Relógio do navegador
 const relogio = document.getElementById('relogio');

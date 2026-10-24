@@ -4,9 +4,11 @@ const COOKIE_CSRF = 'XSRF-TOKEN';
 const HEADER_CSRF = 'X-XSRF-TOKEN';
 
 export class ErroApi extends Error {
-  constructor(status, mensagem) {
+  /** @param campos erros de validação por campo ({ email: 'E-mail inválido.' }), ou null */
+  constructor(status, mensagem, campos = null) {
     super(mensagem);
     this.status = status;
+    this.campos = campos;
   }
 }
 
@@ -46,7 +48,7 @@ export async function api(caminho, { metodo = 'GET', corpo } = {}) {
 
   const dados = await lerJson(resposta);
   if (!resposta.ok) {
-    throw new ErroApi(resposta.status, mensagemDeErro(dados, resposta.status));
+    throw new ErroApi(resposta.status, mensagemDeErro(dados, resposta.status), camposComErro(dados));
   }
   return dados;
 }
@@ -61,6 +63,14 @@ async function lerJson(resposta) {
   } catch {
     return null;
   }
+}
+
+/** Erros de validação chegam como { campo: mensagem }; os demais erros não apontam campo. */
+function camposComErro(dados) {
+  if (!dados || typeof dados !== 'object' || 'erro' in dados || 'status' in dados) {
+    return null;
+  }
+  return dados;
 }
 
 function mensagemDeErro(dados, status) {

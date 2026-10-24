@@ -95,9 +95,9 @@ export function listaAlunos(contexto) {
 export function listaProfessores(contexto) {
   const mensagem = caixaMensagem();
   const area = el('div', {}, el('p', { class: 'vazio' }, 'Carregando...'));
-  const professor = el('select');
-  const turma = el('select');
-  const disciplina = el('select');
+  const professor = el('select', { name: 'professorId' });
+  const turma = el('select', { name: 'turmaId' });
+  const disciplina = el('select', { name: 'disciplinaId' });
   const botao = el('button', { class: 'btn', type: 'submit' }, 'Atribuir aula');
   const mensagemAtribuir = caixaMensagem();
 

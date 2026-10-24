@@ -1,6 +1,7 @@
 // Página do convite: a pessoa vê para qual escola, papel e turma foi convidada e cria nome e senha.
 import { api } from './api.js';
-import { campo, cartao, caixaMensagem, comBotao, el, formatarDataHora, mostrarMensagem } from './ui.js';
+import './tema.js';
+import { campo, cartao, caixaMensagem, comBotao, el, formatarDataHora, marcarCampos, mostrarMensagem } from './ui.js';
 
 const TAMANHO_MINIMO_SENHA = 8;
 const conteudo = document.getElementById('conteudo');
@@ -15,8 +16,10 @@ function erroDeConvite(mensagem) {
 }
 
 function formularioDeAceite(convite) {
-  const nome = el('input', { type: 'text', maxLength: 150, autocomplete: 'name' });
-  const senha = el('input', { type: 'password', minLength: TAMANHO_MINIMO_SENHA, maxLength: 72, autocomplete: 'new-password' });
+  const nome = el('input', { type: 'text', name: 'nome', maxLength: 150, autocomplete: 'name' });
+  const senha = el('input', {
+    type: 'password', name: 'senha', minLength: TAMANHO_MINIMO_SENHA, maxLength: 72, autocomplete: 'new-password'
+  });
   const confirmacao = el('input', { type: 'password', maxLength: 72, autocomplete: 'new-password' });
   const botao = el('button', { class: 'btn', type: 'submit' }, 'Criar minha conta');
   const mensagem = caixaMensagem();
@@ -47,6 +50,7 @@ function formularioDeAceite(convite) {
         contaCriada(convite.email);
       } catch (erro) {
         mostrarMensagem(mensagem, erro.message, 'err');
+        marcarCampos(formulario, mensagem, erro.campos);
       }
     });
   });

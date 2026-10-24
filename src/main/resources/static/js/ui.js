@@ -51,15 +51,55 @@ export function caixaMensagem() {
 export function mostrarMensagem(caixa, texto, tipo = '') {
   caixa.textContent = texto;
   caixa.className = `mensagem ${tipo}`.trim();
+  // Erro é anunciado na hora pelo leitor de tela; confirmação, quando ele puder
+  caixa.setAttribute('role', tipo === 'err' ? 'alert' : 'status');
 }
 
-/** 401 = sessão expirada: volta ao login. Outros erros aparecem na caixa de mensagem. */
-export function tratarErro(contexto, erro, caixa) {
+/**
+ * Destaca os campos que o servidor apontou como inválidos ({ email: '...' }) e liga cada um à mensagem,
+ * para o leitor de tela dizer qual campo está errado. Os campos precisam ter `name` igual ao da API.
+ */
+export function marcarCampos(formulario, caixa, campos) {
+  if (!formulario) {
+    return;
+  }
+  formulario.querySelectorAll('[aria-invalid]').forEach((controle) => {
+    controle.removeAttribute('aria-invalid');
+    controle.removeAttribute('aria-describedby');
+  });
+  if (!campos) {
+    return;
+  }
+  if (!caixa.id) {
+    caixa.id = 'mensagem-' + (++proximoId);
+  }
+  let primeiro = null;
+  for (const nome of Object.keys(campos)) {
+    const controle = formulario.querySelector(`[name="${CSS.escape(nome)}"]`);
+    if (!controle) {
+      continue;
+    }
+    controle.setAttribute('aria-invalid', 'true');
+    controle.setAttribute('aria-describedby', caixa.id);
+    controle.addEventListener('input', () => controle.removeAttribute('aria-invalid'), { once: true });
+    primeiro = primeiro ?? controle;
+  }
+  primeiro?.focus();
+}
+
+/**
+ * 401 = sessão expirada: volta ao login. Outros erros aparecem na caixa de mensagem e, quando o servidor
+ * aponta campos, eles são destacados no formulário da caixa (desligue com `{ marcar: false }` em edições na linha).
+ */
+export function tratarErro(contexto, erro, caixa, { marcar = true } = {}) {
   if (erro.status === 401) {
     contexto.sessaoExpirou();
     return;
   }
   mostrarMensagem(caixa, erro.message, 'err');
+  if (marcar) {
+    marcarCampos(caixa.closest('form'), caixa, erro.campos);
+  }
 }
 
 /** Desabilita o botão enquanto a ação roda, para evitar envio duplo. */

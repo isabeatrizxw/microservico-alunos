@@ -1,15 +1,20 @@
 // Cadastro público de professor autônomo. A conta só ativa depois de abrir o link enviado por e-mail.
 import { api } from './api.js';
-import { campo, cartao, caixaMensagem, comBotao, el, mostrarMensagem } from './ui.js';
+import './tema.js';
+import { campo, cartao, caixaMensagem, comBotao, el, marcarCampos, mostrarMensagem } from './ui.js';
 
 const TAMANHO_MINIMO_SENHA = 8;
 const conteudo = document.getElementById('conteudo');
 
 function formulario() {
-  const nome = el('input', { type: 'text', maxLength: 150, autocomplete: 'name' });
-  const email = el('input', { type: 'email', maxLength: 254, autocomplete: 'email' });
-  const nomeEspaco = el('input', { type: 'text', maxLength: 150, placeholder: 'Ex.: Reforço de Matemática da Ana' });
-  const senha = el('input', { type: 'password', minLength: TAMANHO_MINIMO_SENHA, maxLength: 72, autocomplete: 'new-password' });
+  const nome = el('input', { type: 'text', name: 'nome', maxLength: 150, autocomplete: 'name' });
+  const email = el('input', { type: 'email', name: 'email', maxLength: 254, autocomplete: 'email' });
+  const nomeEspaco = el('input', {
+    type: 'text', name: 'nomeEspaco', maxLength: 150, placeholder: 'Ex.: Reforço de Matemática da Ana'
+  });
+  const senha = el('input', {
+    type: 'password', name: 'senha', minLength: TAMANHO_MINIMO_SENHA, maxLength: 72, autocomplete: 'new-password'
+  });
   const confirmacao = el('input', { type: 'password', maxLength: 72, autocomplete: 'new-password' });
   const botao = el('button', { class: 'btn', type: 'submit' }, 'Criar conta');
   const mensagem = caixaMensagem();
@@ -42,6 +47,7 @@ function formulario() {
         verifiqueSeuEmail(resposta.mensagem);
       } catch (erro) {
         mostrarMensagem(mensagem, erro.message, 'err');
+        marcarCampos(form, mensagem, erro.campos);
       }
     });
   });

@@ -28,7 +28,7 @@ export function telaEscola(contexto) {
 
 /** Cadastro só com nome + lista (usado para turmas e disciplinas). */
 export function cadastroSimples(contexto, { rota, rotulo, exemplo, maximo, textoBotao, textoVazio }) {
-  const nome = el('input', { type: 'text', maxLength: maximo, placeholder: exemplo });
+  const nome = el('input', { type: 'text', name: 'nome', maxLength: maximo, placeholder: exemplo });
   const botao = el('button', { class: 'btn', type: 'submit' }, textoBotao);
   const mensagem = caixaMensagem();
   const lista = el('div', {}, el('p', { class: 'vazio' }, 'Carregando...'));
@@ -76,7 +76,8 @@ export function cadastroSimples(contexto, { rota, rotulo, exemplo, maximo, texto
           mostrarMensagem(mensagem, 'Nome alterado.', 'ok');
           await carregar();
         } catch (erro) {
-          tratarErro(contexto, erro, mensagem);
+          // O campo editado fica na linha, fora do formulário de cadastro: não marcar o campo de lá
+          tratarErro(contexto, erro, mensagem, { marcar: false });
         }
       }));
       linha.replaceChildren(celula(campoNome), celula(el('div', { class: 'acoes' }, salvar, cancelar)));
@@ -108,11 +109,11 @@ export function cadastroSimples(contexto, { rota, rotulo, exemplo, maximo, texto
 
 /** Convites. Com `apenasAlunos` (professor autônomo), só dá para convidar alunos. */
 export function convites(contexto, { apenasAlunos = false } = {}) {
-  const email = el('input', { type: 'email', maxLength: 254, autocomplete: 'off' });
-  const papel = el('select', {},
+  const email = el('input', { type: 'email', name: 'email', maxLength: 254, autocomplete: 'off' });
+  const papel = el('select', { name: 'papel' },
     apenasAlunos ? null : el('option', { value: 'PROFESSOR' }, 'Professor'),
     el('option', { value: 'ALUNO' }, 'Aluno'));
-  const turma = el('select', { disabled: true });
+  const turma = el('select', { name: 'turmaId', disabled: true });
   const botao = el('button', { class: 'btn', type: 'submit' }, 'Gerar convite');
   const mensagem = caixaMensagem();
   const linkGerado = el('div');

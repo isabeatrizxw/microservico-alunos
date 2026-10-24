@@ -1,5 +1,6 @@
 // Página do link de confirmação de e-mail do cadastro de professor autônomo.
 import { api } from './api.js';
+import './tema.js';
 import { cartao, el } from './ui.js';
 
 const conteudo = document.getElementById('conteudo');

@@ -30,10 +30,12 @@ export function telaSuperAdmin(contexto) {
 }
 
 function formularioNovaEscola(contexto, aoCriar) {
-  const nome = el('input', { type: 'text', maxLength: 150, placeholder: 'Ex.: Colégio Exemplo' });
-  const adminNome = el('input', { type: 'text', maxLength: 150 });
-  const adminEmail = el('input', { type: 'email', maxLength: 254, autocomplete: 'off' });
-  const adminSenha = el('input', { type: 'password', minLength: 8, maxLength: 72, autocomplete: 'new-password' });
+  const nome = el('input', { type: 'text', name: 'nome', maxLength: 150, placeholder: 'Ex.: Colégio Exemplo' });
+  const adminNome = el('input', { type: 'text', name: 'adminNome', maxLength: 150 });
+  const adminEmail = el('input', { type: 'email', name: 'adminEmail', maxLength: 254, autocomplete: 'off' });
+  const adminSenha = el('input', {
+    type: 'password', name: 'adminSenha', minLength: 8, maxLength: 72, autocomplete: 'new-password'
+  });
   const botao = el('button', { class: 'btn', type: 'submit' }, 'Cadastrar escola');
   const mensagem = caixaMensagem();
 

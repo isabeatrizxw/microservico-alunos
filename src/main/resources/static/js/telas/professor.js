@@ -20,9 +20,9 @@ export function telaProfessor(contexto) {
   const disciplina = el('select');
   const mensagemGeral = caixaMensagem();
 
-  const aluno = el('select');
-  const descricao = el('input', { type: 'text', maxLength: 100, placeholder: 'Ex.: Prova 1' });
-  const valor = el('input', { type: 'number', min: 0, max: 10, step: 0.01, placeholder: '0 – 10' });
+  const aluno = el('select', { name: 'alunoId' });
+  const descricao = el('input', { type: 'text', name: 'descricao', maxLength: 100, placeholder: 'Ex.: Prova 1' });
+  const valor = el('input', { type: 'number', name: 'valor', min: 0, max: 10, step: 0.01, placeholder: '0 – 10' });
   const botaoLancar = el('button', { class: 'btn', type: 'submit' }, 'Lançar nota');
   const mensagemLancar = caixaMensagem();
 
