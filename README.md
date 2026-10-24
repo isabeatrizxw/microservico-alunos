@@ -9,8 +9,8 @@ Sistema de notas escolares em **Java 17 + Spring Boot 3**, feito para atender v�
 - **Turmas, disciplinas e aulas:** a escola organiza as turmas, cadastra as disciplinas e atribui a cada professor as aulas que ele dá.
 - **Notas e médias:** notas por disciplina, sem limite de avaliações, com boletim do aluno e média da turma.
 - **Professor autônomo:** cadastro aberto, com confirmação por e-mail, para quem dá aulas particulares.
-- **Segurança:** login por sessão, proteção CSRF, senhas com BCrypt e bloqueio após muitas tentativas.
-- **Interface web** em HTML, CSS e JavaScript puro, com tema claro e escuro.
+- **Segurança:** login por sessão, proteção CSRF, senhas com BCrypt, recuperação de senha por e-mail e bloqueio após muitas tentativas.
+- **Interface web** em HTML, CSS e JavaScript puro, com tema claro e escuro e cuidados de acessibilidade.
 
 ## Como executar
 
@@ -68,6 +68,20 @@ A administração também troca alunos de turma, desativa e reativa pessoas (nad
 
 A resposta do cadastro é sempre a mesma, para não revelar quem já tem conta.
 
+### Esqueci minha senha
+
+1. Na tela de login, o link "Esqueci minha senha" leva a `/esqueci-senha.html`, onde a pessoa informa o e-mail.
+2. Se houver uma conta ativa com esse e-mail, o sistema envia um link para `/redefinir-senha.html`, válido por 1 hora e de uso único.
+3. A pessoa escolhe a nova senha e entra pelo login.
+
+A resposta do pedido também é sempre a mesma, exista ou não a conta. Como nos convites, o sistema guarda só o hash do código.
+
+### Interface
+
+- Tema claro ou escuro: segue o sistema operacional até a pessoa escolher um no botão do topo. A escolha vale também para as páginas de login, convite, cadastro e senha.
+- Cores com contraste adequado nos dois temas, botões com pelo menos 44 px de altura em telas de toque.
+- Erros de validação marcam o campo com problema (`aria-invalid`), ligam o campo à mensagem e são anunciados por leitores de tela.
+
 ### Notas e médias
 
 - Cada nota tem disciplina, descrição (ex.: "Prova 1") e valor de 0 a 10, com até 2 casas decimais.
@@ -96,6 +110,8 @@ O login usa sessão (cookie). Requisições que alteram dados precisam do token 
 | `POST` | `/api/auth/logout` | Logado |
 | `POST` | `/api/cadastro/autonomo` | Todos (cria conta de professor autônomo) |
 | `POST` | `/api/cadastro/confirmar` | Quem recebeu o link de confirmação |
+| `POST` | `/api/senha/esqueci` | Todos (envia o link para criar nova senha) |
+| `POST` | `/api/senha/redefinir` | Quem recebeu o link de nova senha |
 | `GET` | `/api/convites/{codigo}` | Quem recebeu o convite |
 | `POST` | `/api/convites/{codigo}/aceitar` | Quem recebeu o convite |
 
@@ -161,6 +177,8 @@ mvn spring-boot:run
 ```
 
 No perfil `prod` o cookie de sessão só trafega por HTTPS e a aplicação não sobe sem SMTP configurado, para nenhum link de convite ou confirmação ir parar no log.
+
+Os limites de tentativas ficam em `application.properties` (`app.limite.*`): login por e-mail e por IP a cada 15 minutos, cadastro por IP e pedidos de nova senha por IP e por e-mail a cada hora. Acima do limite a API responde `429`.
 
 As tabelas são criadas pelas migrações do Flyway em `src/main/resources/db/migration`.
 

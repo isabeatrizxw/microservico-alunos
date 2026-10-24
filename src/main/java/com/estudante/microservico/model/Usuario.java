@@ -90,6 +90,11 @@ public class Usuario {
         this.ativo = true;
     }
 
+    /** @param novaSenhaHash senha já criptografada (BCrypt) — nunca a senha em texto puro */
+    public void trocarSenha(String novaSenhaHash) {
+        this.senhaHash = novaSenhaHash;
+    }
+
     /** Tira o acesso sem apagar nada: notas lançadas ou recebidas continuam no histórico. */
     public void desativar() {
         this.ativo = false;

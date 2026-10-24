@@ -49,7 +49,10 @@ public class SegurancaConfig {
                 .authorizeHttpRequests(acesso -> acesso
                         // Páginas e arquivos da interface: os dados só vêm da API, que exige login
                         .requestMatchers("/", "/index.html", "/convite.html", "/cadastro.html", "/confirmar.html",
+                                "/esqueci-senha.html", "/redefinir-senha.html",
                                 "/css/**", "/js/**", "/favicon.ico", "/error").permitAll()
+                        // "Esqueci minha senha": quem pede ainda não consegue entrar
+                        .requestMatchers(HttpMethod.POST, "/api/senha/esqueci", "/api/senha/redefinir").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         // Cadastro público de professor autônomo e confirmação de e-mail
                         .requestMatchers(HttpMethod.POST, "/api/cadastro/autonomo", "/api/cadastro/confirmar").permitAll()

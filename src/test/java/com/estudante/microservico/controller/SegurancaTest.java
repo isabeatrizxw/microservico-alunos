@@ -97,6 +97,7 @@ class SegurancaTest {
     @Test
     void paginasEArquivosDaInterfaceAbremSemLogin() throws Exception {
         for (String caminho : new String[] {"/", "/index.html", "/convite.html", "/cadastro.html", "/confirmar.html",
+                "/esqueci-senha.html", "/redefinir-senha.html", "/js/esqueci-senha.js", "/js/redefinir-senha.js",
                 "/css/app.css", "/js/main.js", "/js/telas/professor.js", "/js/telas/autonomo.js"}) {
             mockMvc.perform(get(caminho)).andExpect(status().isOk());
         }
